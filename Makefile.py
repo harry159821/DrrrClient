@@ -32,7 +32,7 @@ setup(
             "compressed":False, # 压缩
             "bundle_files":3,   # 3 为不压缩pyd
             # "bundle_files":2,   # 1 为单文件
-            # "dist_dir":".",   # 编译指向文件夹
+            "dist_dir":"./exe",   # 编译指向文件夹
             "includes":["sip",  # 包含的库
                         "PyQt5.QtGui", 
                         "PyQt5.QtCore",
