@@ -21,7 +21,7 @@ http://qt.apidoc.info/5.1.1/qtdoc-online/classes.html
 
 # 图标按钮类重写类
 class labelBtn(QtWidgets.QLabel):
-    Clicked = QtCore.pyqtSignal(str)
+    clicked = QtCore.pyqtSignal(str)
     Entered = QtCore.pyqtSignal(str)
     Leaved = QtCore.pyqtSignal(str)
     Moved = QtCore.pyqtSignal(str,int,int)
@@ -32,7 +32,7 @@ class labelBtn(QtWidgets.QLabel):
         self.name = name
             
     def mouseReleaseEvent(self,event):
-        self.Clicked.emit(self.name)
+        self.clicked.emit(self.name)
         
     def mouseMoveEvent(self,event):
         self.Moved.emit(self.name,event.globalPos().x(),event.globalPos().y())
@@ -307,9 +307,9 @@ class titleBar(QWidget):
 
         self.title_label.setFont(self.font)
 
-        self.close_button = QLabel()
-        self.min_button   = QLabel()
-        self.max_button   = QLabel()
+        self.close_button = labelBtn(None)
+        self.min_button   = labelBtn(None)
+        self.max_button   = labelBtn(None)
 
         self.close_button.setPixmap(QPixmap("./img/orange.png"))
         self.min_button.setPixmap(QPixmap("./img/green.png"))
@@ -351,9 +351,9 @@ class titleBar(QWidget):
         self.title_layout.setContentsMargins(0, 0, 20, 0)
         self.title_layout.addWidget(self.title_label,1,Qt.AlignCenter)
         self.title_layout.addStretch()
-        self.title_layout.addWidget(self.close_button,0,Qt.AlignVCenter)
         self.title_layout.addWidget(self.min_button  ,0,Qt.AlignVCenter)
         self.title_layout.addWidget(self.max_button  ,0,Qt.AlignVCenter)
+        self.title_layout.addWidget(self.close_button,0,Qt.AlignVCenter)
 
         self.setLayout(self.title_layout)
 
@@ -627,7 +627,7 @@ class NetworkAccessManager(QNetworkAccessManager):
         # replyy = QNetworkReplyImpl()
 
         print operation,request.url()
-        # return QNetworkAccessManager.createRequest(self, operation, request, data)
+        return QNetworkAccessManager.createRequest(self, operation, request, data)
 
         # reply = DownloadReply(self, request.url(), self.GetOperation)
         # return reply
@@ -637,7 +637,7 @@ class NetworkAccessManager(QNetworkAccessManager):
         if operation == self.GetOperation and 'http://drrr.com/xml.php' in str(request.url()):
             self.networkReply = NetworkReply(QNetworkAccessManager.createRequest(self, operation, request, data))
             return self.networkReply
-            
+
             print request.url()
             reply = DownloadReply(self, request.url(), self.GetOperation)
             # reply.finished.connect(self.customReplyFinished)
@@ -743,7 +743,13 @@ class DrrrWindow(ShadowsWindow):
         self.widget.setMouseTracking(True)        
         # self.resize(500,650)
         self.resize(650,650)
+        self.setMaximumHeight(660)
         self.center()
+
+        # 功能性功能开始
+        self.titlebar.min_button.clicked.connect(self.hideIt)
+        self.titlebar.max_button.clicked.connect(self.MaxAndNormal)
+        self.titlebar.close_button.clicked.connect(self.closeIt)
 
         self.WebView.load(QUrl("http://drrr.com/"))
         self.show()
@@ -873,9 +879,85 @@ class DrrrWindow(ShadowsWindow):
             loginBtn = doc.findFirst('input[id="TANGRAM__3__submit"]')
             loginBtn.evaluateJavaScript("this.click()")
                                             
-            
     def loading(self, percent):
         self.statusBar.status.setText("Loading %d%%" % percent)
+
+    def quit(self):
+        sys.exit(0)
+        # QtCore.QCoreApplication.instance().quit()
+
+    def closeIt(self):
+        self.animation = QtCore.QPropertyAnimation(self,"windowOpacity")
+        self.animation.finished.connect(QtCore.QCoreApplication.instance().quit)
+        self.animation.finished.connect(self.quit)
+        self.animation.setDuration(300)
+        self.animation.setStartValue(1)
+        self.animation.setEndValue(0)
+        self.animation.start()
+
+    def hideIt(self):
+        self.animation = QtCore.QPropertyAnimation(self,"windowOpacity")
+        self.animation.finished.connect(self.showMinimized2)
+        self.animation.setDuration(300)
+        self.animation.setStartValue(1)
+        self.animation.setEndValue(0)
+        self.animation.start()
+    
+    def leaveEvent(self,event):
+        self.setCursor(QtCore.Qt.ArrowCursor)
+
+    def keyPressEvent(self,event):
+        # F11全屏切换
+        if event.key()==QtCore.Qt.Key_F11:
+            self.MaxAndNormal()
+
+    def MaxAndNormal(self):
+        '''最大化与正常大小间切换函数'''
+        if self.showNormal3():
+            self.showFullScreen3()
+
+    def showEvent(self,event):
+        self.animation = QtCore.QPropertyAnimation(self,"windowOpacity")
+        self.animation.setDuration(300)
+        self.animation.setStartValue(0)
+        self.animation.setEndValue(1)
+        self.animation.start()
+
+    def showNormal2(self):
+        self.showNormal()
+        self.animationEndFlag = 1 # 动画停止
+
+    def showNormal3(self):
+        if self.isFullScreen():
+            self.main_layout.setContentsMargins(10,7,10,7)
+            self.animation = QtCore.QPropertyAnimation(self,"geometry")
+            self.animation.setDuration(180)
+            self.animation.setEndValue(self.normalGeometry2)
+            self.animation.setStartValue(self.desktop.availableGeometry(self.desktop.screenNumber(self.widget)))
+            self.animation.finished.connect(self.showNormal2)
+            self.animationEndFlag = 0
+            self.animation.start()
+            return 0
+        return 1
+
+    def showFullScreen2(self):
+        self.animationEndFlag = 1 # 动画停止
+        self.showFullScreen()
+
+    def showFullScreen3(self):
+        if not self.isFullScreen():
+            self.main_layout.setContentsMargins(0,0,0,0)
+            self.animation = QtCore.QPropertyAnimation(self,"geometry")
+            self.animation.setDuration(180)
+            self.animation.setStartValue(self.geometry())
+            self.animation.setEndValue(self.desktop.availableGeometry(self.desktop.screenNumber(self.widget)))
+            self.animation.finished.connect(self.showFullScreen2)
+            self.animationEndFlag = 0
+            self.animation.start()
+
+    def showMinimized2(self):
+        self.setWindowOpacity(1)
+        self.showMinimized()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -8,7 +8,8 @@ TIME = time.time()
 print u"Pack Begining 开始打包"
 
 DATA = [ ("imageformats", glob.glob("C:\Python27\Lib\site-packages\PyQt4\plugins\imageformats\*.dll")),
-         ("platforms", glob.glob("C:\Python27\Lib\site-packages\PyQt5\plugins\platforms\*.dll"))
+         ("platforms", glob.glob("C:\Python27\Lib\site-packages\PyQt5\plugins\platforms\*.dll")),
+         # ("img"),glob.glob("E:\Project\DrrrPC\img"),
     ]
 
 setup(
@@ -40,7 +41,10 @@ setup(
                         "PyQt5.QtNetwork",
                         "PyQt5.QtWebKit",
                         "PyQt5.QtPrintSupport",
-                        ],  
+                        ],
+            "dll_excludes":[
+                        "icudt51.dll",
+                        ]
             # "dll_excludes":["msvcm90.dll", # 不包含的DLL库
             #                 "msvcp90.dll", 
             #                 "msvcr90.dll"]
