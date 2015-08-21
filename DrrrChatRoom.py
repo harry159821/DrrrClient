@@ -361,11 +361,11 @@ class titleBar(QWidget):
         # 绘制边框
         # self.pixmaps=QStringList()
         self.pixmaps=[]
-        self.pixmaps.append("leftTopStatus.png")
+        self.pixmaps.append("./img/leftTopStatus.png")
         self.pixmaps.append("./img/shadow/left_bottom.png")
-        self.pixmaps.append("rightTopStatus.png")
+        self.pixmaps.append("./img/rightTopStatus.png")
         self.pixmaps.append("./img/shadow/right_bottom.png")
-        self.pixmaps.append("midTopStatus.png")
+        self.pixmaps.append("./img/midTopStatus.png")
         self.pixmaps.append("./img/shadow/bottom_mid.png")
         self.pixmaps.append("./img/shadow/left_mid.png")
         self.pixmaps.append("./img/shadow/right_mid.png")
@@ -415,11 +415,11 @@ class StatusWindow(QMainWindow):
         # self.pixmaps=QStringList()
         self.pixmaps=[]
         self.pixmaps.append("images/left_top.png")
-        self.pixmaps.append("leftStatus.png")
+        self.pixmaps.append("./img/leftStatus.png")
         self.pixmaps.append("images/right_top.png")
-        self.pixmaps.append("rightStatus.png")
+        self.pixmaps.append("./img/rightStatus.png")
         self.pixmaps.append("images/top_mid.png")
-        self.pixmaps.append("midStatus.png")
+        self.pixmaps.append("./img/midStatus.png")
         self.pixmaps.append("images/left_mid.png")
         self.pixmaps.append("images/right_mid.png")
         painter.drawPixmap(0,self.height()-self.SHADOW_WIDTH, self.SHADOW_WIDTH, 
