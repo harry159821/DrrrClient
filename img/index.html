@@ -1,0 +1,71 @@
+<html>
+<head>
+
+<style type="text/css" media="screen">
+span.highlight
+{
+background:url('mei.png')
+}
+</style>
+  <style>
+A:link{TEXT-DECORATION: none;}
+</style>
+<style>
+t_submit-input{
+	width:193px;
+	height:27px;
+	background:url(t_btn.png) 
+	no-repeat;border:0;
+	color:#fff;
+	text-transform:uppercase;
+	font-weight:bold
+			}
+
+#t_logo{
+	width:366px;
+	height:367px;
+	margin:50px auto 50px auto;
+	background:url(drrr.png) 
+	no-repeat
+	}
+	
+#t_form, #t_footer{
+	text-align:center
+	}
+	
+#t_footer,#t_footer a{
+	color:#444;
+	font-size:12px;
+	text-decoration:none
+	}
+  
+#t_footer a:hover{color:#fff}.t_hidden_track{display:none!important}.t_name,
+.t_pass{text-transform:uppercase;font-weight:bold;font-size:14px}.t_name-input,
+.t_pass-input{width:189px;height:23px;padding:2px 10px 1px 10px;font-family:Verdana,Geneva,sans-serif;font-size:14px;background:url(input.png) no-repeat;border:0}
+.t_submit{margin:50px 0 20px 0}
+.t_submit-input{width:193px;height:27px;background:url(submit.png) no-repeat;border:0;color:#fff;text-transform:uppercase;font-weight:bold}
+
+</style>
+</head>
+
+<body text=#FFFFFF bgcolor=#000000> 
+
+<center><img src="drrr.png">
+</center>
+<br><br><br>
+
+<form action="/chat/" method="post">
+<div class="field" id="t_form">
+<p class="t_name">
+<label for="name">Username:</label>
+<input type="textbox" name="name" value="" size="10" maxlength="20"  class="t_name-input">
+</p>
+<p class="t_submit">
+<input type="submit" name="login" value="ENTER" class="t_submit-input">
+</p>
+<input type="hidden" name="token" value="$token">
+</div>
+</form>
+
+</body>
+</html>
