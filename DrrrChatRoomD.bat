@@ -1,0 +1,2 @@
+pyinstaller DrrrChatRoomD.spec
+pause

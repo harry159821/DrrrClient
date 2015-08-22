@@ -1,10 +1,10 @@
 # -*- coding:utf-8 -*-
 
 import sys
-from PyQt5.QtCore import QFile, QIODevice, Qt, QTextStream, QUrl
-from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow
+# from PyQt5.QtCore import QFile, QIODevice, Qt, QTextStream, QUrl
+# from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow
+# from PyQt5.QtNetwork import QNetworkProxyFactory, QNetworkRequest
 from PyQt5.QtWebKitWidgets import QWebPage, QWebView
-from PyQt5.QtNetwork import QNetworkProxyFactory, QNetworkRequest
 from PyQt5.QtWebKit import QWebSettings
 from PyQt5 import QtGui,QtCore,Qt,uic
 from PyQt5 import QtWidgets
@@ -211,14 +211,14 @@ class ShadowsWindow(FrameLessTransparentWindow):
         # 绘制边框
         # self.pixmaps=QStringList()
         self.pixmaps=[]
-        self.pixmaps.append("./img/shadow/left_top.png")
-        self.pixmaps.append("./img/shadow/left_bottom.png")
-        self.pixmaps.append("./img/shadow/right_top.png")
-        self.pixmaps.append("./img/shadow/right_bottom.png")
-        self.pixmaps.append("./img/shadow/top_mid.png")
-        self.pixmaps.append("./img/shadow/bottom_mid.png")
-        self.pixmaps.append("./img/shadow/left_mid.png")
-        self.pixmaps.append("./img/shadow/right_mid.png")
+        self.pixmaps.append("./img/left_top.png")
+        self.pixmaps.append("./img/left_bottom.png")
+        self.pixmaps.append("./img/right_top.png")
+        self.pixmaps.append("./img/right_bottom.png")
+        self.pixmaps.append("./img/top_mid.png")
+        self.pixmaps.append("./img/bottom_mid.png")
+        self.pixmaps.append("./img/left_mid.png")
+        self.pixmaps.append("./img/right_mid.png")
         painter.drawPixmap(0, 0, 
             self.SHADOW_WIDTH, self.SHADOW_WIDTH, QPixmap(self.pixmaps[0]))   # 左上角
         painter.drawPixmap(self.width()-self.SHADOW_WIDTH, 0, 
@@ -362,13 +362,13 @@ class titleBar(QWidget):
         # self.pixmaps=QStringList()
         self.pixmaps=[]
         self.pixmaps.append("./img/leftTopStatus.png")
-        self.pixmaps.append("./img/shadow/left_bottom.png")
+        self.pixmaps.append("./img/left_bottom.png")
         self.pixmaps.append("./img/rightTopStatus.png")
-        self.pixmaps.append("./img/shadow/right_bottom.png")
+        self.pixmaps.append("./img/right_bottom.png")
         self.pixmaps.append("./img/midTopStatus.png")
-        self.pixmaps.append("./img/shadow/bottom_mid.png")
-        self.pixmaps.append("./img/shadow/left_mid.png")
-        self.pixmaps.append("./img/shadow/right_mid.png")
+        self.pixmaps.append("./img/bottom_mid.png")
+        self.pixmaps.append("./img/left_mid.png")
+        self.pixmaps.append("./img/right_mid.png")
         painter.drawPixmap(0, 0, self.SHADOW_WIDTH, self.SHADOW_WIDTH, 
             QPixmap(self.pixmaps[0]))   # 左上角
         painter.drawPixmap(self.width()-self.SHADOW_WIDTH, 0, self.SHADOW_WIDTH, 
@@ -752,6 +752,7 @@ class DrrrWindow(ShadowsWindow):
         self.titlebar.close_button.clicked.connect(self.closeIt)
 
         self.WebView.load(QUrl("http://drrr.com/"))
+        # self.WebView.load(QUrl("file:///E:/Project/DrrrPC/img/index.html"))
         self.show()
 
     def center(self,screenNum=0):
@@ -776,7 +777,7 @@ class DrrrWindow(ShadowsWindow):
 
     def NetworkAccessManagerReplyFinished(self,response):
         # NO USE
-        print response.readAll()
+        # print response.readAll()
         # print response.header(QNetworkRequest.ContentTypeHeader)
         # print response.url()
         # print chardet.detect(response.readAll().data())
@@ -962,10 +963,35 @@ class DrrrWindow(ShadowsWindow):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     QNetworkProxyFactory.setUseSystemConfiguration(True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled,True)
+
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.AutoLoadImages,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.DnsPrefetchEnabled,True)
     QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptEnabled,True)
-    # QNetworkRequest.setHeader()
+    QWebSettings.globalSettings().setAttribute(QWebSettings.JavaEnabled,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.PrivateBrowsingEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptCanOpenWindows,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptCanCloseWindows,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptCanAccessClipboard,True)
+
+    QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.SpatialNavigationEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.LinksIncludedInFocusChain,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.ZoomTextOnly,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.PrintElementBackgrounds,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.OfflineStorageDatabaseEnabled,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.OfflineWebApplicationCacheEnabled,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalStorageEnabled,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalStorageDatabaseEnabled,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
+    QWebSettings.globalSettings().setAttribute(QWebSettings.XSSAuditingEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.AcceleratedCompositingEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.TiledBackingStoreEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.FrameFlatteningEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.SiteSpecificQuirksEnabled,True)
+    # QWebSettings.globalSettings().setOfflineStoragePath("./tmp")
+    # QWebSettings.globalSettings().setOfflineWebApplicationCachePath('./tmp')
 
     drrr = DrrrWindow()
 
