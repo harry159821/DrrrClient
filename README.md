@@ -10,6 +10,7 @@
 # 下载链接
 #### 0.1版
 ##### https://github.com/harry159821/DrrrClient/releases/download/0.1/DrrrChatRoom.0.1.zip
+##### http://pan.baidu.com/s/1bn6pUNX
 
 # 现有功能
 日常网页支持，本地消息提示音播放，F11全屏
