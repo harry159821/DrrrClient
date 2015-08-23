@@ -11,4 +11,7 @@
 #### 0.1版
 ##### https://github.com/harry159821/DrrrClient/releases/download/0.1/DrrrChatRoom.0.1.zip
 
-# 关于我
+# 联系我
+QQ:984405219
+Twitter:harry159821
+Gmail:harry159821@gmail.com
