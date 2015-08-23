@@ -1,2 +1,2 @@
-pyinstaller DrrrChatRoomD.spec
+pyinstaller --distpath=. --clean DrrrChatRoomD.spec
 pause

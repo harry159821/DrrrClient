@@ -5,13 +5,13 @@ import sys
 # from PyQt5.QtWidgets import QApplication,QWidget,QMainWindow
 # from PyQt5.QtNetwork import QNetworkProxyFactory, QNetworkRequest
 from PyQt5.QtWebKitWidgets import QWebPage, QWebView
-from PyQt5.QtWebKit import QWebSettings
 from PyQt5 import QtGui,QtCore,Qt,uic
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtNetwork import *
+from PyQt5 import QtMultimedia
 import chardet
 
 VERSION = 0.1
@@ -19,6 +19,24 @@ VERSION = 0.1
 http://qt.apidoc.info/5.1.1/qtdoc-online/classes.html
 '''
 
+WaitingHTML = """
+<html>
+<head>
+</head>
+<body bgcolor=#000000> 
+
+<br><br><br><br>
+<br><br><br><br>
+<br><br><br><br>
+<center>
+    <font size="7px" color=#FFFFFF>
+        Loading Please Wait...
+    </font>
+</center>
+
+</body>
+</html>
+"""
 # 图标按钮类重写类
 class labelBtn(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(str)
@@ -205,7 +223,7 @@ class ShadowsWindow(FrameLessTransparentWindow):
         super(ShadowsWindow, self).__init__()
         self.setWindowFlags(Qt.FramelessWindowHint)  
         self.setAttribute(Qt.WA_TranslucentBackground)  
-        self.SHADOW_WIDTH=10
+        self.SHADOW_WIDTH=15
 
     def drawShadow(self,painter):
         # 绘制边框
@@ -257,6 +275,7 @@ class titleBar(QWidget):
         self.SHADOW_WIDTH = 30
         self.resize(1000,self.SHADOW_WIDTH)
         self.setMinimumHeight(self.SHADOW_WIDTH)
+        self.setMaximumHeight(self.SHADOW_WIDTH)
         self.setMouseTracking(True)
 
         # return
@@ -396,6 +415,7 @@ class StatusWindow(QMainWindow):
         self.SHADOW_WIDTH = 25
         self.resize(1000,self.SHADOW_WIDTH)
         self.setMinimumHeight(self.SHADOW_WIDTH)
+        self.setMaximumHeight(self.SHADOW_WIDTH)
         self.setMouseTracking(True)
 
         self.font = QtGui.QFont()
@@ -405,6 +425,7 @@ class StatusWindow(QMainWindow):
         self.font.setItalic(False)   # 设置字型,不倾斜
         self.font.setUnderline(False)# 设置字型,无下划线
         self.status = QLabel(self)
+        self.status.setParent(self)
         self.status.move(20,-2)        
         self.status.setFont(self.font)
 
@@ -623,11 +644,13 @@ class NetworkAccessManager(QNetworkAccessManager):
         pass
 
     def createRequest(self, operation, request, data):
+        print operation,request.url()
 
         # replyy = QNetworkReplyImpl()
 
-        print operation,request.url()
-        return QNetworkAccessManager.createRequest(self, operation, request, data)
+        self.reply = QNetworkAccessManager.createRequest(self, operation, request, data)
+        self.reply.readyRead.connect(self.getData)
+        return self.reply
 
         # reply = DownloadReply(self, request.url(), self.GetOperation)
         # return reply
@@ -665,14 +688,36 @@ class NetworkAccessManager(QNetworkAccessManager):
         else:
             return QNetworkAccessManager.createRequest(self, operation, request, data)
 
+class WebView(QWidget):
+    def __init__(self):
+        super(WebView,self).__init__()
+        # self.setWidgetResizable(True)
+        self.setFrameStyle(QFrame.NoFrame)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.m_scrollAreaWidgetContents = QWidget(self)
+        self.m_scrollAreaWidgetContents.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.baseLayout = QVBoxLayout(self.m_scrollAreaWidgetContents)
+        self.setWidget(self.m_scrollAreaWidgetContents)
+        self.m_scrollAreaWidgetContents.installEventFilter(self)
+
+    def eventFilter(o, e):
+        if(o == m_scrollAreaWidgetContents and e.type() == QEvent.Resize):
+            setMinimumWidth(m_scrollAreaWidgetContents.minimumSizeHint().width() + 14)
+            return True
+
+
 class DrrrWindow(ShadowsWindow):
     def __init__(self):
         super(DrrrWindow, self).__init__()
         self.setWindowTitle("Drrr Chat Room")
+        self.setWindowIcon(QIcon('./img/drrr.ico'))
+
+        # w = WebView()
+        # w.show()
+        self.getSetting()
 
         self.WebView = QWebView()
-        self.WebView.resize(3000,3000)
-        # self.WebView.load(QUrl("http://drrr.com/"))
         # self.WebView.load(QUrl("file:///E:/Project/DrrrPC/img/index.html"))
         self.WebView.setZoomFactor(0.8)
 
@@ -743,7 +788,7 @@ class DrrrWindow(ShadowsWindow):
         self.widget.setMouseTracking(True)        
         # self.resize(500,650)
         self.resize(650,650)
-        self.setMaximumHeight(660)
+        # self.setMaximumHeight(660)
         self.center()
 
         # 功能性功能开始
@@ -751,9 +796,20 @@ class DrrrWindow(ShadowsWindow):
         self.titlebar.max_button.clicked.connect(self.MaxAndNormal)
         self.titlebar.close_button.clicked.connect(self.closeIt)
 
-        self.WebView.load(QUrl("http://drrr.com/"))
-        # self.WebView.load(QUrl("file:///E:/Project/DrrrPC/img/index.html"))
+        # notice sound
+        # self.player = 
+
+        self.WebView.setHtml(WaitingHTML)
         self.show()
+        self.WebView.setStyleSheet("""
+            QWebView {
+                background-color:black
+            }        
+            QWebView::QScrollBar:Vertical {
+                background-color:black
+            }
+            """)
+        self.WebView.load(QUrl("http://drrr.com/"))
 
     def center(self,screenNum=0):
         '''多屏居中支持'''
@@ -767,9 +823,23 @@ class DrrrWindow(ShadowsWindow):
                          (screen.height()-size.height())/2,
                          size.width(),size.height())
 
+    def keyPressEvent(self,event):
+        # F11全屏切换
+        if event.key()==QtCore.Qt.Key_F11:
+            self.MaxAndNormal()
+        if event.key()==QtCore.Qt.Key_F4:
+            self.WebView.page().mainFrame().setScrollBarPolicy(Qt.Vertical, Qt.ScrollBarAlwaysOff)
+
     def getData(self):
-        print self.bbb == None
-        print str(self.bbb)
+        # print self.bbb == None
+        # print str(self.bbb)
+        pass
+        
+    @QtCore.pyqtSlot(str)
+    def play(self,content):
+        # ["bubble","userin","userout"]
+        print content
+        QtMultimedia.QSound.play("./img/"+content+".wav")
 
     def readyRead(self):
         pass
@@ -780,20 +850,11 @@ class DrrrWindow(ShadowsWindow):
         # print response.readAll()
         # print response.header(QNetworkRequest.ContentTypeHeader)
         # print response.url()
-        # print chardet.detect(response.readAll().data())
-        # print response.readAll().data().encode("utf-8")
-        # print response
         # self.bbb = response.readAll()
-        # print self.bbb == None
-
-        if 'http://drrr.com/xml.php' in response.url().toString():
-            # print response.readAll().data().encode("utf-8")
-            # print QString.fromAscii(response.readAll())
-            pass
         response.deleteLater()
 
     def contentsChanged(self):
-        print 'contentsChanged'
+        # print 'contentsChanged'
         pass
 
     def _javascript_alert(self, webframe, message):
@@ -812,73 +873,93 @@ class DrrrWindow(ShadowsWindow):
     def linkClicked(self,url):
         print url
 
+    def getSetting(self):
+        '''获取应用设置'''
+        self.settings = QtCore.QSettings("DrrrChatRoom.ini", QtCore.QSettings.IniFormat)
+
     def loadStarted(self):
+        if 'http://drrr.com/' == str(self.WebView.url().toString()):
+            frame = self.WebView.page().mainFrame()
+            name = frame.findFirstElement("input#form-name.home-name-input")
+            username = name.evaluateJavaScript("this.value")
+            print username
+            language = frame.findFirstElement("#form-language-select")
+            language = language.evaluateJavaScript("this.value")
+            print language
+            frame.evaluateJavaScript("""
+                var iconFun = function(){
+                    var elementsLI = document.getElementsByTagName('li')
+                    var length = document.getElementsByTagName('li').length;
+                    for(var i = 0; i < length ; ++i){
+                        if(elementsLI[i].getElementsByTagName('div')[0].className.indexOf("active")>=0){
+                            var icon = elementsLI[i].getElementsByTagName('input')[0].value;
+                        }                    
+                    }
+                    return icon
+                    };                                
+                """)
+            icon = frame.evaluateJavaScript("""iconFun()""")
+
+            print icon
+
+            if username:self.settings.setValue('username',username)
+            if language:self.settings.setValue("language",language)
+            if icon:
+                # self.settings.setValue("icon",icon)
+                pass
+            else:
+                if self.settings.value('icon', None):
+                    icon = self.settings.value('icon',None)
+                    frame.findFirstElement('input[value="'+icon+'"]').evaluateJavaScript("this.click()")
+           
+
+        if "http://drrr.com/room/?ajax=1" in str(self.WebView.url().toString()):
+            # print "quit room"
+            pass
         print 'requestedUrl:' + self.WebView.page().mainFrame().requestedUrl().toString()
     
     def loadFinished(self, flag):
-        '''
-        findFirst里的参数语法#号开头的查找id名的，
-        点号”.”开头的则是查找class名字的，
-        如果没有前面符号的则是查找标准HTML标记比如findFirst(“body”)
-        http://www.w3.org/TR/CSS2/selector.html#q1
-        网页源代码:self.WebView.page().currentFrame().toHtml().toUtf8()
-        set value的方法:setText,setAttribute
-        get 的方法:
-            Text = TextInput.attribute("value")
-            frame.findAllElements("input[name=submit]") 
-            updates.evaluateJavaScript("this.checked").toBool()   (check框)
-            firstName.evaluateJavaScript("this.value").toString()   (普通)
-        
-        <div id=”in_nav”>
-        上一篇：<a title=”新股中签的回报率” href=”/yobin/blog/item/86ad9223e5add74fad34de92.html”>新股中签的回报率</a>
-        下一篇：<a title=”人民时评：且看美国的信息自由” href=”/yobin/blog/item/dc3491587b51cbd59c8204ba.html”>人民时评：且看美国的信息自由</a></div>
-
-        QWebElement e_nav=m_blog.findFirst("#in_nav");
-        QWebElement prev_nav=e_nav.findFirst("a");
-
-        '''
         self.statusBar.status.setText(u"Connected")
 
-        # effect.mp3
-
-        # print 'loadFinished:' + str(self.WebView.url().toString())
-
-        if 'http://drrr.com/lounge/' in str(self.WebView.url().toString()):
-            frame = self.WebView.page().mainFrame().toHtml()
-            # print 'effect.mp3:','effect.mp3' in frame
-            # if 'http://drrr.com/js/effect.mp3' in frame:
-                # self.WebView.setHtml(frame.replace('http://drrr.com/js/effect.mp3','effect.mp3'))
-
-
-        if 'https://passport.baidu.com/v2/?login' == str(self.WebView.url().toString()):
-
-            print 'passport.baidu.com load finish'
+        # http://drrr.com/
+        if 'http://drrr.com/' == str(self.WebView.url().toString()):
             frame = self.WebView.page().mainFrame()
-            #print doc.toPlainText().toUtf8()
-            doc = frame.documentElement()
-            #m_blog = doc.findFirst("#form1")
-            #print m_blog.toPlainText().toUtf8()
+            name = frame.findFirstElement("input#form-name.home-name-input")
+            if self.settings.value('username', None):
+                name.setAttribute('value',self.settings.value('username', None)) 
+            language = frame.findFirstElement("#form-language-select")
+            if self.settings.value('language', None):
+                language.evaluateJavaScript('''
+                    sel = document.getElementById("form-language-select");
+                    for(var i = 0, j = sel.options.length; i < j; ++i) {
+                        if(sel.options[i].value === "'''+self.settings.value('language', "zh-CN")+'''") {
+                           sel.selectedIndex = i;
+                           break;
+                        }
+                    }
+                    ''')
+                # language.setAttribute('value',self.settings.value('language', None))
+            if self.settings.value('icon', None):
+                icon = self.settings.value('icon',None)
+                frame.findFirstElement('input[value="'+icon+'"]').evaluateJavaScript("this.click()")
 
-            '''
-            百度搜索
-            baiduInput = doc.findFirst('input[id="kw1"]')
-            baiduInput.setAttribute('value',u'我不知道')
-            print baiduInput.attribute("value")
-            #baiduinput.setFocus()
-            baiduSearch = doc.findFirst('input[id="su1"]')
-            baiduSearch.evaluateJavaScript("this.click()")
-            #doc.evaluateJavaScript("document.getElementById('su1').click()")
-            #baiduInput.evaluateJavaScript("javascript:F.call('ps/sug','pssubmit');")
-            '''
-
-            nameInput = doc.findFirst('input[id="TANGRAM__3__userName"]')
-            #nameInput = doc.findFirst('#TANGRAM__3__userName')
-            nameInput.setAttribute('value',u'harryide')
-            passwordInput = doc.findFirst('input[id="TANGRAM__3__password"]')
-            passwordInput.setAttribute('value',u'*******')
-
-            loginBtn = doc.findFirst('input[id="TANGRAM__3__submit"]')
-            loginBtn.evaluateJavaScript("this.click()")
+        # http://drrr.com/create_room/
+        if 'http://drrr.com/room/' in str(self.WebView.url().toString()):
+            frame = self.WebView.page().mainFrame()
+            frame.addToJavaScriptWindowObject("drrrWindow", self)
+            frame.evaluateJavaScript('''
+                var volumeFun = function(b){
+                    return b
+                    }
+                ''')
+            frame.evaluateJavaScript('''
+                var playFun = function(a){
+                    this.volume = volumeFun;
+                    drrrWindow.play(a);
+                    return this
+                    };
+                ''')
+            frame.evaluateJavaScript('''sound.play = playFun''')
                                             
     def loading(self, percent):
         self.statusBar.status.setText("Loading %d%%" % percent)
@@ -910,12 +991,23 @@ class DrrrWindow(ShadowsWindow):
     def keyPressEvent(self,event):
         # F11全屏切换
         if event.key()==QtCore.Qt.Key_F11:
-            self.MaxAndNormal()
+            self.MaxAndNormal2()
+
+    def MaxAndNormal2(self):
+        '''全屏与正常大小间切换函数'''
+        if self.showNormal3():
+            self.showFullScreen3()
+            self.titlebar.hide()
+            self.statusBar.hide()
+        else:
+            self.titlebar.show()
+            self.statusBar.show()            
 
     def MaxAndNormal(self):
         '''最大化与正常大小间切换函数'''
         if self.showNormal3():
             self.showFullScreen3()
+
 
     def showEvent(self,event):
         self.animation = QtCore.QPropertyAnimation(self,"windowOpacity")
@@ -964,34 +1056,11 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     QNetworkProxyFactory.setUseSystemConfiguration(True)
 
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.AutoLoadImages,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.DnsPrefetchEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.JavaEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.PrivateBrowsingEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptCanOpenWindows,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptCanCloseWindows,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptCanAccessClipboard,True)
-
+    from PyQt5.QtWebKit import QWebSettings
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.JavascriptEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.JavaEnabled,True)
+    # QWebSettings.globalSettings().setAttribute(QWebSettings.PluginsEnabled,True)
     QWebSettings.globalSettings().setAttribute(QWebSettings.DeveloperExtrasEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.SpatialNavigationEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.LinksIncludedInFocusChain,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.ZoomTextOnly,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.PrintElementBackgrounds,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.OfflineStorageDatabaseEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.OfflineWebApplicationCacheEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalStorageEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalStorageDatabaseEnabled,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalContentCanAccessRemoteUrls,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.LocalContentCanAccessFileUrls,True)
-    QWebSettings.globalSettings().setAttribute(QWebSettings.XSSAuditingEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.AcceleratedCompositingEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.TiledBackingStoreEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.FrameFlatteningEnabled,True)
-    # QWebSettings.globalSettings().setAttribute(QWebSettings.SiteSpecificQuirksEnabled,True)
-    # QWebSettings.globalSettings().setOfflineStoragePath("./tmp")
-    # QWebSettings.globalSettings().setOfflineWebApplicationCachePath('./tmp')
 
     drrr = DrrrWindow()
 
@@ -1013,4 +1082,13 @@ netRequest.setUrl(QUrl("http://example.com/do_login.php"));
 netRequest.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded; charset=UTF-8");
 
 ui->webView->load(netRequest, QNetworkAccessManager::PostOperation, postData);
+
+var elementsLI = document.getElementsByTagName('li')
+var length = document.getElementsByTagName('li').length;
+for(var i = 0; i < length ; ++i){
+    if(elementsLI[i].getElementsByTagName('div')[0].className.indexOf("active")>=0){
+        console.log(elementsLI[i].getElementsByTagName('input')[0].value)
+        break
+    }                    
+}
 '''
