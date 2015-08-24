@@ -4,6 +4,8 @@
 
 B站展示视频 http://www.bilibili.com/video/av2790951/
 
+跳转网页 http://harry159821.github.io/DrrrClient/
+
 ![](https://github.com/harry159821/DrrrClient/raw/master/Shot/drrrPC2.png)
 
 ![](https://github.com/harry159821/DrrrClient/raw/master/Shot/drrrPC3.png)
@@ -21,6 +23,7 @@ B站展示视频 http://www.bilibili.com/video/av2790951/
 
 # Bug
 1.测试了一下午，发现音乐播放会自动离线模式然后循环，暂时没有找到简单的解决办法
+
 2.本地存储的头像选择出现了一些问题
 
 # 联系我
