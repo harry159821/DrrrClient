@@ -3,6 +3,7 @@
 无头看着很爽，于是想给 Drrr.us 写个 PC 客户端， Android 有了暂时先放放，截图后发现 塞尔提 用的很像客户端，蛮喜欢的风格，仔细找了一下发现还是浏览器，不管他，写成同样的款式， 
 
 B站展示视频 http://www.bilibili.com/video/av2790951/
+
 跳转网页 http://harry159821.github.io/DrrrClient/
 
 ![](https://github.com/harry159821/DrrrClient/raw/master/Shot/drrrPC2.png)
@@ -22,6 +23,7 @@ B站展示视频 http://www.bilibili.com/video/av2790951/
 
 # Bug
 1.测试了一下午，发现音乐播放会自动离线模式然后循环，暂时没有找到简单的解决办法
+
 2.本地存储的头像选择出现了一些问题
 
 # 联系我
