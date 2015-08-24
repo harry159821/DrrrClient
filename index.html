@@ -8,8 +8,29 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <script src="jquery-1.11.1.min.js"></script>
+    <script type="text/javascript">
+    function insert(insertText){
+        var insertTextTest = "<table><tr><td>any thing</td></tr></table>";
+        document.getElementById("insert").innerHTML = document.getElementById("insert").innerHTML+insertText;
+    }
+    function getGet(){
+        $.ajax({
+            url:"http://meidoubeta.sinaapp.com/test",
+            type:'GET',
+            dataType:'JSONP',
+            jsonpCallback:"success_jsonpCallback",
+            success: function(data) {
+                insert(data[0].html);
+            },
+            error:function(){
+                console.log("fail load");
+            }
+        });
+    }
+    </script>     
   </head>
-  <body>
+  <body onLoad="getGet();">
     <section class="page-header">
       <h1 class="project-name">Drrr Client For PC</h1>
       <a href="https://github.com/harry159821/DrrrClient" class="btn">View on GitHub</a>
@@ -69,5 +90,6 @@ Gmail:<a href="mailto:harry159821@gmail.com">harry159821@gmail.com</a></p>
         <span class="site-footer-owner"><a href="https://github.com/harry159821/DrrrClient">Drrrclient</a> is maintained by <a href="https://github.com/harry159821">harry159821</a>.</span>
     </section>
     
+    <div id="insert"></div>
   </body>
 </html>
