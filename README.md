@@ -11,8 +11,8 @@ B站展示视频 http://www.bilibili.com/video/av2790951/
 ![](https://github.com/harry159821/DrrrClient/raw/master/Shot/drrrPC3.png)
 
 # 下载链接
-#### 0.1版
-##### https://github.com/harry159821/DrrrClient/releases/download/0.1/DrrrChatRoom.0.1.zip
+#### 0.1.1版
+##### https://github.com/harry159821/DrrrClient/releases/download/v0.1.1/DrrrChatRoom.0.1.1.7z
 ##### http://pan.baidu.com/s/1bn6pUNX
 
 # 现有功能
