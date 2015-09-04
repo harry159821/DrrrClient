@@ -27,7 +27,7 @@ B站展示视频 http://www.bilibili.com/video/av2790951/
 2.本地存储的头像选择出现了一些问题
 
 # Bug讨论区
-#####　https://github.com/harry159821/DrrrClient/issues/1
+#### https://github.com/harry159821/DrrrClient/issues/1
 
 # 联系我
 QQ:984405219
