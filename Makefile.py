@@ -43,7 +43,7 @@ setup(
                         "PyQt5.QtPrintSupport",
                         ],
             "dll_excludes":[
-                        "icudt51.dll",
+                        # "icudt51.dll",
                         ]
             # "dll_excludes":["msvcm90.dll", # 不包含的DLL库
             #                 "msvcp90.dll", 
