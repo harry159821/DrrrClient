@@ -4,7 +4,7 @@
 
 B站展示视频 http://www.bilibili.com/video/av2790951/
 
-跳转网页 http://harry159821.github.io/DrrrClient/
+网页介绍 http://harry159821.github.io/DrrrClient/
 
 ![](https://github.com/harry159821/DrrrClient/raw/master/Shot/drrrPC2.png)
 
